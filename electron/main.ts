@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain, globalShortcut, Tray, Menu, nativeImage, NativeImage, screen, shell } from 'electron';
 import path from 'node:path';
+import fs from 'node:fs';
 import { NotesStore, NoteItem } from './store';
 
 // Set application details
@@ -42,19 +43,35 @@ if (!gotTheLock) {
   });
 }
 
+function getAppIconPath(): string {
+  if (isDev) {
+    const devIco = path.join(__dirname, '../public/icon.ico');
+    if (fs.existsSync(devIco)) return devIco;
+    const devFav = path.join(__dirname, '../public/favicon.ico');
+    if (fs.existsSync(devFav)) return devFav;
+    return path.join(__dirname, '../public/icon.png');
+  } else {
+    const prodIco = path.join(__dirname, '../dist/icon.ico');
+    if (fs.existsSync(prodIco)) return prodIco;
+    const prodFav = path.join(__dirname, '../dist/favicon.ico');
+    if (fs.existsSync(prodFav)) return prodFav;
+    return path.join(__dirname, '../dist/icon.png');
+  }
+}
+
 function getAppIcon(): NativeImage {
-  const iconPath = isDev
-    ? path.join(__dirname, '../public/icon.png')
-    : path.join(__dirname, '../dist/icon.png');
-  return nativeImage.createFromPath(iconPath);
+  return nativeImage.createFromPath(getAppIconPath());
 }
 
 function createTray() {
   if (tray) return;
 
+  const iconPath = getAppIconPath();
   const appIcon = getAppIcon();
+
+  // On Windows, passing the .ico path directly preserves all native multi-DPI resolutions
   const trayIcon = !appIcon.isEmpty()
-    ? appIcon.resize({ width: 16, height: 16 })
+    ? (iconPath.endsWith('.ico') ? iconPath : appIcon.resize({ width: 16, height: 16 }))
     : nativeImage.createFromBuffer(
         Buffer.from(
           'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGD4z0ABYBw1gGE0DBhGwwAYDYOnBqD/oYFh1ACGEc0DeDYwYHQPhwEALeMR/yU4EekAAAAASUVORK5CYII=',
@@ -118,7 +135,7 @@ function createNoteWindow(note: NoteItem): BrowserWindow {
     skipTaskbar: false,
     resizable: true,
     autoHideMenuBar: true,
-    icon: getAppIcon(),
+    icon: getAppIconPath(),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -341,7 +358,7 @@ function openSettingsWindow(sourceNoteId?: string): BrowserWindow {
     skipTaskbar: false,
     resizable: false,
     autoHideMenuBar: true,
-    icon: getAppIcon(),
+    icon: getAppIconPath(),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
