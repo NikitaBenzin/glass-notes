@@ -19,7 +19,7 @@
     "desktop",
     "macos-theme"
   ],
-  "author": "Nikit",
+  "author": "NikitaBenzin",
   "license": "MIT",
   "dependencies": {
     "@tiptap/extension-link": "^3.31.3",
@@ -56,8 +56,9 @@
     "vite-plugin-electron-renderer": "^1.0.0"
   },
   "build": {
-    "appId": "com.glassnotes.app",
+    "appId": "com.nikitabenzin.glassnotes",
     "productName": "GlassNotes",
+    "copyright": "Copyright © 2026 NikitaBenzin",
     "directories": {
       "output": "release"
     },
@@ -67,6 +68,7 @@
     ],
     "win": {
       "icon": "build/icon.ico",
+      "legalTrademarks": "NikitaBenzin",
       "target": [
         {
           "target": "nsis",

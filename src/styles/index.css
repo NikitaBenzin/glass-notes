@@ -214,8 +214,8 @@ html, body {
 }
 
 /* TipTap Dynamic Placeholder (Low opacity matching frosted glass) */
-.note-tiptap-editor p.is-editor-empty:first-child::before,
-.note-tiptap-editor p.is-empty:first-child::before {
+.note-tiptap-editor > p.is-editor-empty:first-child::before,
+.note-tiptap-editor > p.is-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;
   color: rgba(255, 255, 255, 0.28);
@@ -302,33 +302,58 @@ html, body {
 }
 
 /* Task List & Checkbox Item (WYSIWYG Markdown Inline Alignment) */
-.note-tiptap-editor ul[data-type="taskList"] {
+.note-tiptap-editor ul[data-type="taskList"],
+.note-tiptap-editor ul.task-list,
+ul[data-type="taskList"],
+ul.task-list {
   list-style: none !important;
   padding: 0 !important;
-  margin: 0.4rem 0 !important;
+  margin: 0.35rem 0 !important;
 }
 
-.note-tiptap-editor ul[data-type="taskList"] li[data-type="taskItem"] {
+.note-tiptap-editor li[data-type="taskItem"],
+.note-tiptap-editor li.task-item,
+.note-tiptap-editor li[data-checked],
+li[data-type="taskItem"],
+li.task-item,
+li[data-checked],
+.note-tiptap-editor li:has(> label > input[type="checkbox"]),
+.note-tiptap-editor li:has(input[type="checkbox"]) {
   display: flex !important;
   flex-direction: row !important;
-  align-items: flex-start !important;
+  align-items: center !important;
   margin: 0.25rem 0 !important;
   list-style: none !important;
   padding: 0 !important;
+  min-height: 1.5rem !important;
+  line-height: 1.6 !important;
 }
 
-.note-tiptap-editor ul[data-type="taskList"] li[data-type="taskItem"] > label {
+.note-tiptap-editor li[data-type="taskItem"] > label,
+.note-tiptap-editor li.task-item > label,
+.note-tiptap-editor li[data-checked] > label,
+li[data-type="taskItem"] > label,
+li.task-item > label,
+li[data-checked] > label,
+.note-tiptap-editor li:has(> label > input[type="checkbox"]) > label {
   flex: 0 0 auto !important;
-  margin-right: 0.55rem !important;
+  margin: 0 0.55rem 0 0 !important;
+  padding: 0 !important;
   user-select: none !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  margin-top: 0.18rem !important;
   cursor: pointer !important;
+  line-height: 1 !important;
 }
 
-.note-tiptap-editor ul[data-type="taskList"] li[data-type="taskItem"] > label input[type="checkbox"] {
+.note-tiptap-editor li[data-type="taskItem"] > label input[type="checkbox"],
+.note-tiptap-editor li.task-item > label input[type="checkbox"],
+.note-tiptap-editor li[data-checked] > label input[type="checkbox"],
+li[data-type="taskItem"] > label input[type="checkbox"],
+li.task-item > label input[type="checkbox"],
+li[data-checked] > label input[type="checkbox"],
+.note-tiptap-editor input[type="checkbox"] {
   appearance: none !important;
   -webkit-appearance: none !important;
   width: 14px !important;
@@ -341,19 +366,28 @@ html, body {
   position: relative !important;
   transition: all 0.15s ease !important;
   margin: 0 !important;
+  padding: 0 !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
 }
 
-.note-tiptap-editor ul[data-type="taskList"] li[data-type="taskItem"] > label input[type="checkbox"]:hover {
+.note-tiptap-editor li[data-type="taskItem"] > label input[type="checkbox"]:hover,
+.note-tiptap-editor li.task-item > label input[type="checkbox"]:hover,
+.note-tiptap-editor li[data-checked] > label input[type="checkbox"]:hover {
   border-color: rgba(255, 255, 255, 0.6) !important;
   background: rgba(255, 255, 255, 0.15) !important;
 }
 
-.note-tiptap-editor ul[data-type="taskList"] li[data-type="taskItem"] > label input[type="checkbox"]:checked {
+.note-tiptap-editor li[data-type="taskItem"] > label input[type="checkbox"]:checked,
+.note-tiptap-editor li.task-item > label input[type="checkbox"]:checked,
+.note-tiptap-editor li[data-checked] > label input[type="checkbox"]:checked {
   background: #3b82f6 !important;
   border-color: #3b82f6 !important;
 }
 
-.note-tiptap-editor ul[data-type="taskList"] li[data-type="taskItem"] > label input[type="checkbox"]:checked::after {
+.note-tiptap-editor li[data-type="taskItem"] > label input[type="checkbox"]:checked::after,
+.note-tiptap-editor li.task-item > label input[type="checkbox"]:checked::after,
+.note-tiptap-editor li[data-checked] > label input[type="checkbox"]:checked::after {
   content: '' !important;
   position: absolute !important;
   left: 3.5px !important;
@@ -365,17 +399,48 @@ html, body {
   transform: rotate(45deg) !important;
 }
 
-.note-tiptap-editor ul[data-type="taskList"] li[data-type="taskItem"] > div {
+/* Text wrapper: Flex item filling remaining row space horizontally */
+.note-tiptap-editor li[data-type="taskItem"] > div,
+.note-tiptap-editor li.task-item > div,
+.note-tiptap-editor li[data-checked] > div,
+li[data-type="taskItem"] > div,
+li.task-item > div,
+li[data-checked] > div,
+.note-tiptap-editor li:has(input[type="checkbox"]) > div {
   flex: 1 1 auto !important;
   min-width: 0 !important;
-}
-
-.note-tiptap-editor ul[data-type="taskList"] li[data-type="taskItem"] > div > p {
+  display: flex !important;
+  align-items: center !important;
   margin: 0 !important;
-  display: inline !important;
+  padding: 0 !important;
 }
 
-.note-tiptap-editor ul[data-type="taskList"] li[data-type="taskItem"][data-checked="true"] > div {
+/* Inner paragraph text: Inline on the exact same horizontal line */
+.note-tiptap-editor li[data-type="taskItem"] > div > p,
+.note-tiptap-editor li.task-item > div > p,
+.note-tiptap-editor li[data-checked] > div > p,
+li[data-type="taskItem"] > div > p,
+li.task-item > div > p,
+li[data-checked] > div > p,
+.note-tiptap-editor li:has(input[type="checkbox"]) > div > p {
+  margin: 0 !important;
+  padding: 0 !important;
+  display: inline-block !important;
+  width: 100% !important;
+  line-height: 1.6 !important;
+}
+
+/* Suppress any placeholder pseudo-elements inside task items */
+.note-tiptap-editor li[data-type="taskItem"] p::before,
+.note-tiptap-editor li.task-item p::before,
+.note-tiptap-editor li[data-checked] p::before {
+  content: none !important;
+  display: none !important;
+}
+
+.note-tiptap-editor li[data-type="taskItem"][data-checked="true"] > div,
+.note-tiptap-editor li.task-item[data-checked="true"] > div,
+.note-tiptap-editor li[data-checked="true"] > div {
   text-decoration: line-through !important;
   color: rgba(255, 255, 255, 0.4) !important;
 }

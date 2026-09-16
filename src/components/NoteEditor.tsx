@@ -6,6 +6,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import Link from '@tiptap/extension-link';
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
+import { wrappingInputRule } from '@tiptap/core';
 
 interface NoteEditorProps {
   content: string;
@@ -20,6 +21,21 @@ export const PLACEHOLDER_PHRASES = [
   'Dark-mode aesthetics...',
   'Road to independence...',
 ];
+
+// Enhanced TaskItem with input rule matching both "[] " and "[ ] " and "- [ ] "
+export const CustomTaskItem = TaskItem.extend({
+  addInputRules() {
+    return [
+      wrappingInputRule({
+        find: /^\s*(?:[-*]\s+)?(\[([( |x])?\])\s$/,
+        type: this.type,
+        getAttributes: (match) => ({
+          checked: match[match.length - 1] === 'x',
+        }),
+      }),
+    ];
+  },
+});
 
 export const NoteEditor: React.FC<NoteEditorProps> = ({
   content,
@@ -57,9 +73,18 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({
         openOnClick: false,
         autolink: true,
       }),
-      TaskList,
-      TaskItem.configure({
+      TaskList.configure({
+        HTMLAttributes: {
+          class: 'task-list',
+          'data-type': 'taskList',
+        },
+      }),
+      CustomTaskItem.configure({
         nested: true,
+        HTMLAttributes: {
+          class: 'task-item',
+          'data-type': 'taskItem',
+        },
       }),
     ],
     content: content || '',
