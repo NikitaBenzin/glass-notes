@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, globalShortcut, Tray, Menu, nativeImage, screen, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, globalShortcut, Tray, Menu, nativeImage, NativeImage, screen, shell } from 'electron';
 import path from 'node:path';
 import { NotesStore, NoteItem } from './store';
 
@@ -11,7 +11,7 @@ let tray: Tray | null = null;
 
 const isDev = process.env.VITE_DEV_SERVER_URL !== undefined;
 
-function getAppIcon(): nativeImage {
+function getAppIcon(): NativeImage {
   const iconPath = isDev
     ? path.join(__dirname, '../public/icon.png')
     : path.join(__dirname, '../dist/icon.png');
