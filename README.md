@@ -179,4 +179,4 @@ pc-notes/
 
 ## 📄 License
 
-MIT © [Nikit](https://github.com/)
+MIT © [NikitaBenzin](https://github.com/NikitaBenzin)
