@@ -285,7 +285,7 @@ html, body {
   color: rgba(255, 255, 255, 0.45);
 }
 
-.note-tiptap-editor ul {
+.note-tiptap-editor ul:not([data-type="taskList"]) {
   list-style-type: disc;
   padding-left: 1.2rem;
   margin: 0.35rem 0;
@@ -297,8 +297,87 @@ html, body {
   margin: 0.35rem 0;
 }
 
-.note-tiptap-editor li {
+.note-tiptap-editor li:not([data-type="taskItem"]) {
   margin: 0.15rem 0;
+}
+
+/* Task List & Checkbox Item (WYSIWYG Markdown Inline Alignment) */
+.note-tiptap-editor ul[data-type="taskList"] {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0.4rem 0 !important;
+}
+
+.note-tiptap-editor ul[data-type="taskList"] li[data-type="taskItem"] {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start !important;
+  margin: 0.25rem 0 !important;
+  list-style: none !important;
+  padding: 0 !important;
+}
+
+.note-tiptap-editor ul[data-type="taskList"] li[data-type="taskItem"] > label {
+  flex: 0 0 auto !important;
+  margin-right: 0.55rem !important;
+  user-select: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-top: 0.18rem !important;
+  cursor: pointer !important;
+}
+
+.note-tiptap-editor ul[data-type="taskList"] li[data-type="taskItem"] > label input[type="checkbox"] {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 14px !important;
+  height: 14px !important;
+  border-radius: 4px !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  outline: none !important;
+  cursor: pointer !important;
+  position: relative !important;
+  transition: all 0.15s ease !important;
+  margin: 0 !important;
+}
+
+.note-tiptap-editor ul[data-type="taskList"] li[data-type="taskItem"] > label input[type="checkbox"]:hover {
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+.note-tiptap-editor ul[data-type="taskList"] li[data-type="taskItem"] > label input[type="checkbox"]:checked {
+  background: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+}
+
+.note-tiptap-editor ul[data-type="taskList"] li[data-type="taskItem"] > label input[type="checkbox"]:checked::after {
+  content: '' !important;
+  position: absolute !important;
+  left: 3.5px !important;
+  top: 1px !important;
+  width: 4px !important;
+  height: 8px !important;
+  border: solid white !important;
+  border-width: 0 1.8px 1.8px 0 !important;
+  transform: rotate(45deg) !important;
+}
+
+.note-tiptap-editor ul[data-type="taskList"] li[data-type="taskItem"] > div {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+.note-tiptap-editor ul[data-type="taskList"] li[data-type="taskItem"] > div > p {
+  margin: 0 !important;
+  display: inline !important;
+}
+
+.note-tiptap-editor ul[data-type="taskList"] li[data-type="taskItem"][data-checked="true"] > div {
+  text-decoration: line-through !important;
+  color: rgba(255, 255, 255, 0.4) !important;
 }
 
 .note-tiptap-editor blockquote {

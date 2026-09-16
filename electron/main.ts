@@ -11,6 +11,33 @@ let tray: Tray | null = null;
 
 const isDev = process.env.VITE_DEV_SERVER_URL !== undefined;
 
+// Single instance lock to prevent double launch
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    // Focus existing note windows on second launch attempt
+    if (windows.size > 0) {
+      windows.forEach((win) => {
+        if (!win.isDestroyed()) {
+          if (win.isMinimized()) win.restore();
+          win.show();
+          win.focus();
+        }
+      });
+    } else {
+      const notes = store.getNotes();
+      if (notes.length > 0) {
+        notes.forEach((n) => createNoteWindow(n));
+      } else {
+        createNewNote();
+      }
+    }
+  });
+}
+
 function getAppIcon(): NativeImage {
   const iconPath = isDev
     ? path.join(__dirname, '../public/icon.png')
@@ -115,6 +142,12 @@ function createNoteWindow(note: NoteItem): BrowserWindow {
 
   win.on('closed', () => {
     windows.delete(note.id);
+    if (windows.size === 0) {
+      if (settingsWindow && !settingsWindow.isDestroyed()) {
+        settingsWindow.close();
+      }
+      app.quit();
+    }
   });
 
   // Handle in-app shortcuts (Ctrl+N to create new note, Ctrl+W to close/delete)
@@ -218,12 +251,14 @@ function deleteNote(id: string): void {
   if (win && !win.isDestroyed()) {
     win.close();
   }
+  windows.delete(id);
 
-  // If all notes are deleted, spawn a fresh empty one so user is not left empty-handed
-  if (store.getNotes().length === 0) {
-    setTimeout(() => {
-      createNewNote();
-    }, 150);
+  // When all notes are closed/deleted, quit the application
+  if (windows.size === 0) {
+    if (settingsWindow && !settingsWindow.isDestroyed()) {
+      settingsWindow.close();
+    }
+    app.quit();
   }
 }
 
@@ -357,9 +392,27 @@ ipcMain.handle('settings:save', (_event, newSettings) => {
   return updated;
 });
 
+function configureAutoLaunch() {
+  // In production / packaged Windows builds, register with Windows startup
+  if (app.isPackaged || !isDev) {
+    try {
+      app.setLoginItemSettings({
+        openAtLogin: true,
+        path: process.execPath,
+        args: [],
+      });
+    } catch (err) {
+      console.error('Failed to configure Windows auto-launch:', err);
+    }
+  }
+}
+
 app.whenReady().then(() => {
   // Remove default application menu so Ctrl+N / Ctrl+W are never intercepted by Chromium
   Menu.setApplicationMenu(null);
+
+  // Register auto-start on Windows boot
+  configureAutoLaunch();
 
   createTray();
 
@@ -368,11 +421,16 @@ app.whenReady().then(() => {
     createNewNote();
   });
 
-  // Restore existing notes or create welcome note
+  // Restore existing notes deduplicated or create welcome note
   const savedNotes = store.getNotes();
+  const spawnedIds = new Set<string>();
+
   if (savedNotes.length > 0) {
     savedNotes.forEach((note) => {
-      createNoteWindow(note);
+      if (note && note.id && !spawnedIds.has(note.id)) {
+        spawnedIds.add(note.id);
+        createNoteWindow(note);
+      }
     });
   } else {
     createNewNote();
@@ -396,6 +454,6 @@ app.on('will-quit', () => {
 });
 
 app.on('window-all-closed', () => {
-  // On Windows, keep app running in background tray unless user quits from tray
-  // If no tray or desired, we can keep the process active or quit.
+  // Completely quit the entire application when all note windows are closed
+  app.quit();
 });

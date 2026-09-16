@@ -63,8 +63,15 @@ export class NotesStore {
         const raw = fs.readFileSync(this.filePath, 'utf-8');
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed.notes)) {
+          // Deduplicate notes by ID to prevent duplicate notes on startup
+          const uniqueNotesMap = new Map<string, NoteItem>();
+          for (const note of parsed.notes) {
+            if (note && note.id && !uniqueNotesMap.has(note.id)) {
+              uniqueNotesMap.set(note.id, note);
+            }
+          }
           return {
-            notes: parsed.notes,
+            notes: Array.from(uniqueNotesMap.values()),
             settings: {
               ...DEFAULT_SETTINGS,
               ...(parsed.settings || {}),
