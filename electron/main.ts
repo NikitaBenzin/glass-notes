@@ -5,11 +5,15 @@ import { NotesStore, NoteItem } from './store';
 // Set application details
 app.setName('GlassNotes');
 
+const isDev = process.env.VITE_DEV_SERVER_URL !== undefined;
+
+// Explicitly set userData directory to prevent single-instance lock collision with other running Electron apps
+const userDataPath = path.join(app.getPath('appData'), isDev ? 'GlassNotes-Dev' : 'GlassNotes');
+app.setPath('userData', userDataPath);
+
 const store = new NotesStore();
 const windows = new Map<string, BrowserWindow>();
 let tray: Tray | null = null;
-
-const isDev = process.env.VITE_DEV_SERVER_URL !== undefined;
 
 // Single instance lock to prevent double launch
 const gotTheLock = app.requestSingleInstanceLock();
